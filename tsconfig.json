@@ -16,6 +16,21 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "#/*": [
+        "src/*",
+      ],
+      "#config/*": [
+        "src/config/*"
+      ],
+      "#test/*": [
+        "test/*"
+      ],
+    }
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*",
+  ],
 }
