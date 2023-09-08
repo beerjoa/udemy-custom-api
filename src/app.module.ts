@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { AppController } from '#/app.controller';
 import { AppService } from '#/app.service';
 import commonConfig from '#config/common.config';
 import databaseConfig from '#config/database.config';
+import mongoConfigAsync from '#config/database/mongo';
 
 @Module({
   imports: [
@@ -13,6 +15,7 @@ import databaseConfig from '#config/database.config';
       isGlobal: true,
       load: [commonConfig, databaseConfig],
     }),
+    MongooseModule.forRootAsync(mongoConfigAsync),
   ],
   controllers: [AppController],
   providers: [AppService],

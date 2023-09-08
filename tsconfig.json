@@ -1,3 +1,4 @@
+// prettier-ignore
 {
   "compilerOptions": {
     "module": "commonjs",
@@ -19,10 +20,19 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "#/*": [
-        "src/*",
+        "src/*"
       ],
       "#config/*": [
         "src/config/*"
+      ],
+      "#schemas/*": [
+        "src/schemas/*"
+      ],
+      "#utils/*": [
+        "src/utils/*"
+      ],
+      "#tasks/*": [
+        "src/tasks/*"
       ],
       "#test/*": [
         "test/*"
