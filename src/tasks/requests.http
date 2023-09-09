@@ -1,0 +1,33 @@
+# Task API
+
+@base_url = http://localhost:3000/api
+@task_id = 64fa3c71096e6b525ab07bc4
+
+### POST /tasks
+POST {{base_url}}/tasks
+content-type: application/json
+
+{
+  "description": "Task1",
+  "status": "OPEN"
+}
+
+### GET /tasks 
+GET {{base_url}}/tasks
+content-type: application/json
+
+### GET /tasks/:task_id
+GET {{base_url}}/tasks/{{task_id}}
+content-type: application/json
+
+### PUT /tasks/:task_id
+PUT {{base_url}}/tasks/{{task_id}}
+content-type: application/json
+
+{
+  "description": "Updated Task2"
+}
+
+### DELETE /tasks/:task_id
+DELETE {{base_url}}/tasks/64fa3c1dff4bd9dd5bae29f9
+content-type: application/json
