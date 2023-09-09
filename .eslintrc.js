@@ -1,3 +1,4 @@
+// Docs: https://eslint.org/docs/user-guide/configuring
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -5,7 +6,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'simple-import-sort'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -21,5 +22,17 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'prettier/prettier': 2, // Means error
+    'simple-import-sort/exports': 'error',
+    'simple-import-sort/imports': [
+      'error',
+      {
+        groups: [
+          ['^\\u0000', '', '^node:'],
+          ['^\\w', '^@?\\w'],
+          ['^#/.*|$', '^#?\\w'],
+        ],
+      },
+    ],
   },
 };

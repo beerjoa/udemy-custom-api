@@ -1,9 +1,18 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "rootDir": "../",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "moduleNameMapper": {
+    "^#/(.*)$": "<rootDir>/src/$1",
+    "^#config/(.*)$": "<rootDir>/src/config/$1",
+    "^#schemas/(.*)$": "<rootDir>/src/schemas/$1",
+    "^#utils/(.*)$": "<rootDir>/src/utils/$1",
+    "^#tasks/(.*)$": "<rootDir>/src/tasks/$1",
+    "^#test/(.*)$": "<rootDir>/test/$1"
   }
 }

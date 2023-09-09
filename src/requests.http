@@ -1,0 +1,7 @@
+### GET / 
+GET http://localhost:3000
+content-type: application/json
+
+### GET /env
+GET http://localhost:3000/env?name=database
+content-type: application/json
