@@ -1,7 +1,9 @@
+@API_URL=http://localhost:3000/api
+
 ### GET / 
-GET http://localhost:3000
+GET {{API_URL}}
 content-type: application/json
 
 ### GET /env
-GET http://localhost:3000/env?name=database
+GET {{API_URL}}/env?name=database
 content-type: application/json

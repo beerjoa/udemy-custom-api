@@ -14,5 +14,6 @@
     "^#utils/(.*)$": "<rootDir>/src/utils/$1",
     "^#tasks/(.*)$": "<rootDir>/src/tasks/$1",
     "^#test/(.*)$": "<rootDir>/test/$1"
-  }
+  },
+  "setupFilesAfterEnv": ["<rootDir>/test/setup.ts"]
 }

@@ -6,11 +6,8 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin', 'simple-import-sort'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
+  plugins: ['@typescript-eslint/eslint-plugin', 'import'],
+  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   root: true,
   env: {
     node: true,
@@ -22,16 +19,22 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    'prettier/prettier': 2, // Means error
-    'simple-import-sort/exports': 'error',
-    'simple-import-sort/imports': [
+    'no-restricted-imports': ['error', { patterns: ['.*'] }],
+    'import/order': [
       'error',
       {
-        groups: [
-          ['^\\u0000', '', '^node:'],
-          ['^\\w', '^@?\\w'],
-          ['^#/.*|$', '^#?\\w'],
+        groups: ['builtin', 'internal', 'external', ['parent', 'sibling'], 'index', 'object', 'type', 'unknown'],
+        pathGroups: [
+          { pattern: 'node:*', group: 'builtin', position: 'before' },
+          { pattern: 'nestjs', group: 'internal', position: 'before' },
+          { pattern: '#/**', group: 'parent', position: 'before' },
+          { pattern: '#*/**', group: 'sibling', position: 'after' },
         ],
+        'newlines-between': 'always',
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
       },
     ],
   },

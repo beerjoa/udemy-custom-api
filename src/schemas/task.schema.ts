@@ -1,7 +1,7 @@
-import { Exclude } from 'class-transformer';
-import { HydratedDocument } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
+import { HydratedDocument } from 'mongoose';
 
 export enum ETaskStatus {
   OPEN = 'OPEN',
