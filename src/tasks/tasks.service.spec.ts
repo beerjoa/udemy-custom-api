@@ -1,7 +1,9 @@
+import { HttpService } from '@nestjs/axios';
 import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Model } from 'mongoose';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { ETaskStatus, Task } from '#schemas/task.schema';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
@@ -48,6 +50,19 @@ describe('TasksService', () => {
             updateOne: jest.fn().mockResolvedValue(createdTask),
             findByIdAndDelete: jest.fn().mockResolvedValue(createdTask),
             exec: jest.fn(),
+          },
+        },
+        {
+          provide: WINSTON_MODULE_NEST_PROVIDER,
+          useValue: {
+            debug: jest.fn(),
+            error: jest.fn(),
+          },
+        },
+        {
+          provide: HttpService,
+          useValue: {
+            get: jest.fn(),
           },
         },
       ],

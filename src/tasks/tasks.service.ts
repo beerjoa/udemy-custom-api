@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { Task } from '#schemas/task.schema';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
@@ -8,7 +10,11 @@ import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
-  constructor(@InjectModel(Task.name) private taskModel: Model<Task>) {}
+  constructor(
+    @InjectModel(Task.name) private taskModel: Model<Task>,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
+    private readonly httpService: HttpService,
+  ) {}
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     await this.checkTaskDuplication(createTaskDto);
