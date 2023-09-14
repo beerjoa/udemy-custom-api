@@ -1,10 +1,14 @@
-import { HttpService } from '@nestjs/axios';
+import { inspect } from 'util';
+
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Cron } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
-import { Task } from '#schemas/task.schema';
+import { UdemyHttpService } from '#/http/udemy.service';
+
+import { ETaskStatus, Task } from '#schemas/task.schema';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 
@@ -13,8 +17,38 @@ export class TasksService {
   constructor(
     @InjectModel(Task.name) private taskModel: Model<Task>,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
-    private readonly httpService: HttpService,
+    private readonly udemyHttpService: UdemyHttpService,
   ) {}
+
+  @Cron('*/2 * * * *')
+  async checkDiscountState(): Promise<boolean> {
+    const nowDate = new Date();
+    const task = await this.taskModel.create({
+      title: `checkDiscountState-${nowDate.getTime()}`,
+      description: `checking discount state from udemy api at ${nowDate.toLocaleString()}`,
+      status: ETaskStatus.OPEN,
+    });
+
+    try {
+      task.status = ETaskStatus.IN_PROGRESS;
+
+      const course_ids = await this.udemyHttpService.getCourseIdsFromApi();
+      const discountStatus = await this.udemyHttpService.getDiscountStatusFromApi(course_ids);
+
+      task.result = { discountStatus };
+      task.status = ETaskStatus.DONE;
+      this.logger.debug(`discountStatus: ${discountStatus}`, this.constructor.name);
+      return discountStatus;
+    } catch (error) {
+      task.result = { message: error.message, stack: error.stack };
+      task.status = ETaskStatus.FAILED;
+      this.logger.error(`${inspect(error)}`, this.constructor.name);
+      throw error;
+    } finally {
+      task.updatedAt = new Date();
+      await this.taskModel.updateOne({ _id: task._id }, task).exec();
+    }
+  }
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     await this.checkTaskDuplication(createTaskDto);

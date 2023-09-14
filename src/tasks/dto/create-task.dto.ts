@@ -7,6 +7,7 @@ export class CreateTaskDto {
   @ApiProperty({
     description: 'Task Title',
     example: 'This is a task title',
+    type: String,
   })
   @IsString()
   title: string;
@@ -14,6 +15,7 @@ export class CreateTaskDto {
   @ApiProperty({
     description: 'Task Description',
     example: 'This is a task description',
+    type: String,
   })
   @IsString()
   description: string;
@@ -21,6 +23,7 @@ export class CreateTaskDto {
   @ApiProperty({
     description: 'Task Status',
     example: ETaskStatus.OPEN,
+    enum: ETaskStatus,
   })
   @IsEnum(ETaskStatus)
   status: ETaskStatus;

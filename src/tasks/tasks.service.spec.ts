@@ -1,9 +1,10 @@
-import { HttpService } from '@nestjs/axios';
 import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+
+import { UdemyHttpService } from '#/http/udemy.service';
 
 import { ETaskStatus, Task } from '#schemas/task.schema';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
@@ -29,6 +30,7 @@ describe('TasksService', () => {
   const createdTask = {
     _id: expect.any(String),
     ...createTaskDto,
+    result: expect.any(Object),
     createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
     deletedAt: expect.any(null),
@@ -60,9 +62,10 @@ describe('TasksService', () => {
           },
         },
         {
-          provide: HttpService,
+          provide: UdemyHttpService,
           useValue: {
-            get: jest.fn(),
+            getDiscountStatusFromApi: jest.fn().mockResolvedValue(true),
+            getCourseIdsFromApi: jest.fn().mockResolvedValue([1, 2, 3, 4, 5]),
           },
         },
       ],
