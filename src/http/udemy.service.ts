@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -17,7 +17,6 @@ export class UdemyHttpService {
     const { data } = await firstValueFrom(
       this.httpService.get<PricingResponseDto>('/pricing', { params: { course_ids: course_ids.join(',') } }).pipe(
         catchError((error: AxiosError) => {
-          this.logger.error(error, this.constructor.name);
           throw error;
         }),
       ),
@@ -29,7 +28,7 @@ export class UdemyHttpService {
   }
   async getCourseIdsFromApi(): Promise<number[]> {
     const params: CourseQueryDto = {
-      page_size: 5,
+      page_size: 10,
       page: 1,
       price: 'price-paid',
     };
@@ -42,6 +41,8 @@ export class UdemyHttpService {
         }),
       ),
     );
+
+    if (Array.isArray(data.results) && data.results.length === 0) throw new NotFoundException('No courses found');
 
     return data.results.map((course) => course.id);
   }

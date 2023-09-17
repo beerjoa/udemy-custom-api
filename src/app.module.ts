@@ -7,10 +7,10 @@ import { WinstonModule } from 'nest-winston';
 import { AppController } from '#/app.controller';
 import { AppService } from '#/app.service';
 
-import commonConfig, { httpConfig } from '#config/common.config';
-import mongoConfigAsync from '#config/database/mongo';
-import databaseConfig from '#config/database.config';
-import winstonConfigAsync from '#config/logger.config';
+import commonConfig, { httpConfig } from '#core/common.config';
+import mongoConfigAsync from '#core/database/mongo';
+import databaseConfig from '#core/database.config';
+import winstonConfigAsync from '#core/logger.config';
 import { TasksModule } from '#tasks/tasks.module';
 
 @Module({

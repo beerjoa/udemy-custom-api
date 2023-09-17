@@ -91,10 +91,11 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^#/(.*)$": "<rootDir>/$1",
-      "^#config/(.*)$": "<rootDir>/config/$1",
+      "^#core/(.*)$": "<rootDir>/core/$1",
       "^#schemas/(.*)$": "<rootDir>/schemas/$1",
       "^#utils/(.*)$": "<rootDir>/utils/$1",
-      "^#tasks/(.*)$": "<rootDir>/tasks/$1"
+      "^#tasks/(.*)$": "<rootDir>/tasks/$1",
+      "^#http/(.*)$": "<rootDir>/http/$1"
     }
   }
 }

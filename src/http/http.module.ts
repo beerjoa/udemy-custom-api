@@ -1,7 +1,7 @@
 import { HttpModule as AxiosHttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 
-import httpConfigAsync from '#config/http.config';
+import httpConfigAsync from '#core/http.config';
 import { UdemyHttpService } from '#http/udemy.service';
 
 @Module({

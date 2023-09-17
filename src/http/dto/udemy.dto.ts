@@ -37,7 +37,7 @@ type TCourse = {
   url: string;
   is_paid: boolean;
   price: string;
-  price_detail: null;
+  price_detail: TPricingCoursesPrice;
   price_serve_tracking_id: string;
   visible_instructors: TCourseVisibleInstructors[];
   image_125_H: string;

@@ -2,7 +2,7 @@ import { inspect } from 'util';
 
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
@@ -20,7 +20,7 @@ export class TasksService {
     private readonly udemyHttpService: UdemyHttpService,
   ) {}
 
-  @Cron('*/2 * * * *')
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async checkDiscountState(): Promise<boolean> {
     const nowDate = new Date();
     const task = await this.taskModel.create({
@@ -37,15 +37,18 @@ export class TasksService {
 
       task.result = { discountStatus };
       task.status = ETaskStatus.DONE;
+
       this.logger.debug(`discountStatus: ${discountStatus}`, this.constructor.name);
       return discountStatus;
     } catch (error) {
       task.result = { message: error.message, stack: error.stack };
       task.status = ETaskStatus.FAILED;
-      this.logger.error(`${inspect(error)}`, this.constructor.name);
-      throw error;
+
+      this.logger.error(`${inspect(error.stack)}`, this.constructor.name);
+      throw error.stack;
     } finally {
       task.updatedAt = new Date();
+
       await this.taskModel.updateOne({ _id: task._id }, task).exec();
     }
   }
