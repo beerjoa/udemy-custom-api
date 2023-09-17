@@ -39,9 +39,21 @@ export class Task {
   @ApiProperty({
     description: 'Task Status',
     example: ETaskStatus.OPEN,
+    enum: ETaskStatus,
   })
   @Prop({ required: true })
   status: ETaskStatus;
+
+  @ApiProperty({
+    description: 'Task Result',
+    example: null,
+  })
+  @Prop({
+    required: false,
+    type: Object,
+    default: null,
+  })
+  result: object;
 
   @ApiProperty({
     description: 'Task Created At',

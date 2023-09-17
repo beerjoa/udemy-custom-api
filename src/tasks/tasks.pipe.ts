@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars*/
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
 
