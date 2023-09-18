@@ -26,6 +26,7 @@ describe('TasksController', () => {
   const createdTask = {
     _id: expect.any(String),
     ...createTaskDto,
+    result: expect.any(Object),
     createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
     deletedAt: expect.any(null),

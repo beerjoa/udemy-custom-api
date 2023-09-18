@@ -1,6 +1,6 @@
+import { ArgumentsHost, Catch, ExceptionFilter, InternalServerErrorException } from '@nestjs/common';
 import { Response } from 'express';
 import { MongooseError } from 'mongoose';
-import { ArgumentsHost, Catch, ExceptionFilter, InternalServerErrorException } from '@nestjs/common';
 
 type TExceptionResponse = {
   message: string;

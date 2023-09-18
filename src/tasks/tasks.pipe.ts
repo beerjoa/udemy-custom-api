@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars*/
-import { isValidObjectId } from 'mongoose';
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { isValidObjectId } from 'mongoose';
 
 @Injectable()
 export class ParseTaskIDPipe implements PipeTransform {
