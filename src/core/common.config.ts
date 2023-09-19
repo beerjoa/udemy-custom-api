@@ -13,4 +13,11 @@ export const httpConfig = registerAs('http', () => ({
   udemyApiKey: process.env.API_KEY || 'API_KEY',
 }));
 
+export const authConfig = registerAs('auth', () => ({
+  jwt: {
+    accessSecret: process.env.JWT_ACCESS_SECRET_KEY || 'secret',
+    accessExpirationTime: process.env.JWT_ACCESS_EXPIRATION_TIME || '60s',
+  },
+}));
+
 export default commonConfig;

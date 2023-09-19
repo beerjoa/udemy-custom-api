@@ -37,6 +37,9 @@
       "#http/*": [
         "src/http/*"
       ],
+      "#auth/*": [
+        "src/auth/*"
+      ],
       "#test/*": [
         "test/*"
       ],
