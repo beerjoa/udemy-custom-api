@@ -99,7 +99,7 @@
     "moduleNameMapper": {
       "^#/(.*)$": "<rootDir>/$1",
       "^#core/(.*)$": "<rootDir>/core/$1",
-      "^#schemas/(.*)$": "<rootDir>/schemas/$1",
+      "^#schemas$": "<rootDir>/schemas",
       "^#utils/(.*)$": "<rootDir>/utils/$1",
       "^#tasks/(.*)$": "<rootDir>/tasks/$1",
       "^#http/(.*)$": "<rootDir>/http/$1",

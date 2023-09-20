@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { Task } from '#schemas/task.schema';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 import { ParseTaskIDPipe } from '#tasks/tasks.pipe';
 import { TasksService } from '#tasks/tasks.service';
+
+import { Task } from '#schemas';
 
 @ApiTags('tasks')
 @Controller('tasks')

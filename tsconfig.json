@@ -25,8 +25,8 @@
       "#core/*": [
         "src/core/*"
       ],
-      "#schemas/*": [
-        "src/schemas/*"
+      "#schemas": [
+        "src/schemas"
       ],
       "#utils/*": [
         "src/utils/*"

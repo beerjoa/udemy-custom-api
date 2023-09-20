@@ -1,5 +1,5 @@
 db = db.getSiblingDB('mongo');
 
 db.createCollection('tasks');
-
-db.createCollection('cats');
+db.createCollection('users');
+db.createCollection('blacklists');

@@ -6,11 +6,11 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
-import { UdemyHttpService } from '#/http/udemy.service';
-
-import { ETaskStatus, Task } from '#schemas/task.schema';
+import { UdemyHttpService } from '#http/udemy.service';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
+
+import { ETaskStatus, Task } from '#schemas';
 
 @Injectable()
 export class TasksService {

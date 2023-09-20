@@ -10,7 +10,7 @@
   "moduleNameMapper": {
     "^#/(.*)$": "<rootDir>/src/$1",
     "^#core/(.*)$": "<rootDir>/src/core/$1",
-    "^#schemas/(.*)$": "<rootDir>/src/schemas/$1",
+    "^#schemas$": "<rootDir>/src/schemas",
     "^#utils/(.*)$": "<rootDir>/src/utils/$1",
     "^#tasks/(.*)$": "<rootDir>/src/tasks/$1",
     "^#http/(.*)$": "<rootDir>/src/http/$1",

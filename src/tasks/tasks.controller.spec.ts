@@ -1,11 +1,12 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ETaskStatus } from '#schemas/task.schema';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 import { TasksController } from '#tasks/tasks.controller';
 import { TasksService } from '#tasks/tasks.service';
+
+import { ETaskStatus } from '#schemas';
 
 describe('TasksController', () => {
   let taskController: TasksController;
