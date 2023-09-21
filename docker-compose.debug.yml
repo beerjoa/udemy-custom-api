@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  cudemy:
+    container_name: cudemy
+    build:
+      context: ./
+      dockerfile: docker/cudemy/Dockerfile
+      target: base
+    volumes:
+      - ./.env:/data/app/.env:ro
+      - ./src/:/data/app/src/:ro
+    ports:
+      - 3000:3000
+      - 9229:9229
+    environment:
+      - NODE_ENV=devlopment
+    command: ['npm', 'run', 'start:debug:docker']
+    restart: on-failure
