@@ -10,10 +10,11 @@
   "moduleNameMapper": {
     "^#/(.*)$": "<rootDir>/src/$1",
     "^#core/(.*)$": "<rootDir>/src/core/$1",
-    "^#schemas/(.*)$": "<rootDir>/src/schemas/$1",
+    "^#schemas$": "<rootDir>/src/schemas",
     "^#utils/(.*)$": "<rootDir>/src/utils/$1",
     "^#tasks/(.*)$": "<rootDir>/src/tasks/$1",
     "^#http/(.*)$": "<rootDir>/src/http/$1",
+    "^#auth/(.*)$": "<rootDir>/src/auth/$1",
     "^#test/(.*)$": "<rootDir>/test/$1"
   },
   "setupFilesAfterEnv": ["<rootDir>/test/setup.ts"]
