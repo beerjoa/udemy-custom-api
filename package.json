@@ -1,10 +1,13 @@
 {
   "name": "udemy-custom-api",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "",
-  "author": "",
+  "author": "Jaeyong Shim <hello@beerjoa.dev>",
   "private": true,
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "prepare": "husky install",
     "build": "nest build",

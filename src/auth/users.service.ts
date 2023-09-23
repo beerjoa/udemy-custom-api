@@ -25,7 +25,7 @@ export class UsersService {
     return user;
   }
 
-  // Schedule
+  // Schedule Job
   @Timeout('createDummyUser', 5000)
   async createDummyUser(): Promise<User> {
     const userDto = {

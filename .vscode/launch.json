@@ -23,7 +23,15 @@
       "remoteRoot": "/data/app",
       "port": 9229,
       "restart": true,
-      "autoAttachChildProcesses": true
+      "autoAttachChildProcesses": true,
+      "skipFiles": [
+        "node_modules/**",
+        "dist/**",
+        ".vscode/**",
+        ".git/**",
+        "docker/**",
+        "deploy/**",
+      ]
     },
   ]
 }

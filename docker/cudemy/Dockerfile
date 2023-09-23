@@ -30,7 +30,13 @@ RUN npm ci
 
 COPY --chown=node:node . .
 
+EXPOSE 3000
+CMD ["npm", "run", "start:debug:docker"]
+
 # Production
 FROM base as production
 
 RUN npm run build
+
+EXPOSE 3000
+CMD ["npm", "run", "start:prod"]

@@ -15,5 +15,4 @@ services:
       - 9229:9229
     environment:
       - NODE_ENV=devlopment
-    command: ['npm', 'run', 'start:debug:docker']
     restart: on-failure
