@@ -1,0 +1,29 @@
+# Auth API
+
+@base_url = http://localhost:3000/api
+@token = token
+
+
+
+### POST /auth/login
+POST {{base_url}}/auth/login
+content-type: application/json
+
+{
+  "email": "test@test.com",
+  "tid": "dummy-tid"
+}
+
+
+### POST /auth/verify
+POST {{base_url}}/auth/verify
+content-type: application/json
+Authorization: Bearer {{token}}
+
+
+### GET /auth/logout
+GET {{base_url}}/auth/logout
+content-type: application/json
+Authorization: Bearer {{token}}
+
+

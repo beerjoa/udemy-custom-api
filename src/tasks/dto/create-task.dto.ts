@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
 
-import { ETaskStatus } from '#schemas/task.schema';
+import { ETaskStatus } from '#schemas';
 
 export class CreateTaskDto {
   @ApiProperty({

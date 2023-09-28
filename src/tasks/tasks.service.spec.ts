@@ -4,12 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
-import { UdemyHttpService } from '#/http/udemy.service';
-
-import { ETaskStatus, Task } from '#schemas/task.schema';
+import { UdemyHttpService } from '#http/udemy.service';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 import { TasksService } from '#tasks/tasks.service';
+
+import { ETaskStatus, Task } from '#schemas';
 
 describe('TasksService', () => {
   let taskService: TasksService;
@@ -96,7 +96,7 @@ describe('TasksService', () => {
       expect(taskService.findAll).toBeDefined();
     });
 
-    describe('and tasks are found', () => {
+    describe('and task is found', () => {
       beforeEach(() => {
         jest.spyOn(taskModel, 'find').mockReturnValue({
           exec: jest.fn().mockResolvedValueOnce([createdTask]),

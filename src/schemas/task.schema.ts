@@ -11,8 +11,6 @@ export enum ETaskStatus {
   CANCELED = 'CANCELED',
 }
 
-export type TTaskDocument = HydratedDocument<Task>;
-
 @Schema()
 export class Task {
   @Exclude()
@@ -93,4 +91,5 @@ export class Task {
   __v: number;
 }
 
+export type TTaskDocument = HydratedDocument<Task>;
 export const TaskSchema = SchemaFactory.createForClass(Task);

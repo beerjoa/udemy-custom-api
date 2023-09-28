@@ -9,16 +9,30 @@ volumes:
     driver: local
 
 services:
-  mongo:
-    image: mongo:7.0.1-jammy
-    container_name: mongo
-    restart: on-failure
+  cudemy:
+    container_name: cudemy
+    build:
+      context: ./
+      dockerfile: docker/cudemy/Dockerfile
+      target: production
+    volumes:
+      - ./.env:/data/app/.env:ro
     ports:
-      - 27017:27017
+      - 3000:3000
+    environment:
+      - NODE_ENV=production
+    restart: on-failure
+
+  mongo:
+    container_name: mongo
+    image: mongo:7.0.1-jammy
     volumes:
       - mongo-data:/data/db
       - ./docker/mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    ports:
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: admin
       MONGO_INITDB_DATABASE: mongo
+    restart: on-failure
