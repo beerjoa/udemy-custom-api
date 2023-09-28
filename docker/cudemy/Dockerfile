@@ -6,6 +6,7 @@ LABEL build_date="2023-09-21"
 RUN apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -q -y \
         procps \
+        curl \
         ; \
     apt-get autoremove -y; \
     apt-get clean; \

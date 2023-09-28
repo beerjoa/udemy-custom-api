@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Inject, Logger } from '@nestjs/common';
+import { Controller, Get, Query, Inject, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
@@ -15,10 +15,13 @@ export class AppController {
   @Get()
   getHello(): string {
     try {
-      this.logger.log(`Hello World!`, this.constructor.name);
-      this.logger.debug(`Hello World!`, this.constructor.name);
-      this.logger.warn(`Hello World!`, this.constructor.name);
-      // throw Error('Hello World!');
+      const nodeEnv = this.configService.get<string>('common.nodeEnv');
+      if (nodeEnv === 'development') {
+        this.logger.log(`Hello World!`, this.constructor.name);
+        this.logger.debug(`Hello World!`, this.constructor.name);
+        this.logger.warn(`Hello World!`, this.constructor.name);
+        // throw Error('Hello World!');
+      }
     } catch (error) {
       this.logger.error(error, error.stack, this.constructor.name);
     }
@@ -27,6 +30,11 @@ export class AppController {
 
   @Get('env')
   getEnv(@Query('name') subEnvName: string): unknown {
-    return this.configService.get<object>(subEnvName);
+    const nodeEnv = this.configService.get<string>('common.nodeEnv');
+    if (nodeEnv === 'development') {
+      return this.configService.get<object>(subEnvName);
+    } else {
+      throw new NotFoundException('Not Found');
+    }
   }
 }

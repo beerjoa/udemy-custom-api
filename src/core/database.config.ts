@@ -7,7 +7,10 @@ const databaseConfig = registerAs('database', () => ({
     user: process.env.MONGO_USER,
     password: process.env.MONGO_PASSWORD,
     database: process.env.MONGO_DATABASE,
-    uri: `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
+    uri:
+      process.env.MONGO_URI !== ''
+        ? process.env.MONGO_URI
+        : `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`,
   },
   postgres: {
     host: process.env.POSTGRES_HOST,
