@@ -1,10 +1,12 @@
 import { Controller, Get, Query, Inject, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ApiExcludeController } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { AppService } from '#/app.service';
 
 @Controller()
+@ApiExcludeController()
 export class AppController {
   constructor(
     private readonly appService: AppService,
