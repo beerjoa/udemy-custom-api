@@ -99,4 +99,12 @@ export class TasksService {
       await this.taskModel.updateOne({ _id: task._id }, task).exec();
     }
   }
+
+  // minute hour day month day-of-week
+  @Cron('*/14 * * * *')
+  async wakeUpRenderFreeTierServer(): Promise<boolean> {
+    // Render spins down free tier servers after 15 minutes of inactivity
+    this.logger.log(`wakeUpRenderFreeTierServer`, this.constructor.name);
+    return true;
+  }
 }

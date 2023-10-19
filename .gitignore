@@ -76,3 +76,4 @@ terraform.rc
 !.env.example
 .reference.md
 deploy
+test/task.e2e-spec.ts

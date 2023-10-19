@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
+import { JwtAuthGuard } from '#auth/guard';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 import { ParseTaskIDPipe } from '#tasks/tasks.pipe';
@@ -8,42 +9,45 @@ import { TasksService } from '#tasks/tasks.service';
 
 import { Task } from '#schemas';
 
-@ApiTags('tasks')
 @Controller('tasks')
+@UseGuards(JwtAuthGuard)
+@ApiTags('tasks')
+@ApiBearerAuth('access-token')
+@ApiUnauthorizedResponse({ status: 401, description: 'Unauthorized' })
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
+  @Post()
   @ApiOkResponse({ type: Task, description: 'Task created successfully' })
   @ApiOperation({ summary: 'Create a new task' })
-  @Post()
   create(@Body() createTaskDto: CreateTaskDto) {
     return this.tasksService.create(createTaskDto);
   }
 
+  @Get()
   @ApiOkResponse({ type: [Task], description: 'Tasks found successfully' })
   @ApiOperation({ summary: 'Find all tasks' })
-  @Get()
   findAll() {
     return this.tasksService.findAll();
   }
 
+  @Get(':task_id')
   @ApiOkResponse({ type: Task, description: 'Task found successfully' })
   @ApiOperation({ summary: 'Find a task by ID' })
-  @Get(':task_id')
   findOne(@Param('task_id', ParseTaskIDPipe) task_id: string) {
     return this.tasksService.findOne(task_id);
   }
 
+  @Put(':task_id')
   @ApiOkResponse({ type: Task, description: 'Task updated successfully' })
   @ApiOperation({ summary: 'Update a task by ID' })
-  @Put(':task_id')
   update(@Param('task_id', ParseTaskIDPipe) task_id: string, @Body() updateTaskDto: UpdateTaskDto) {
     return this.tasksService.update(task_id, updateTaskDto);
   }
 
+  @Delete(':task_id')
   @ApiOkResponse({ type: Task, description: 'Task removed successfully' })
   @ApiOperation({ summary: 'Remove a task by ID' })
-  @Delete(':task_id')
   remove(@Param('task_id', ParseTaskIDPipe) task_id: string) {
     return this.tasksService.remove(task_id);
   }

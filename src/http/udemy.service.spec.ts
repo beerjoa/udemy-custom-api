@@ -1,16 +1,22 @@
 import { HttpService } from '@nestjs/axios';
 import { PickType } from '@nestjs/mapped-types';
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
+import { Model, Types } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { of } from 'rxjs';
 
 import { CourseResponseDto, CourseQueryDto } from '#http/dto/udemy.dto';
 import { UdemyHttpService } from '#http/udemy.service';
+import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
+
+import { ETaskStatus, Task } from '#schemas';
 
 describe('UdemyHttpService', () => {
   let udemyHttpService: UdemyHttpService;
   let httpService: HttpService;
+  let taskModel: Model<Task>;
 
   const courseQueryDto: CourseQueryDto = {
     page_size: expect.any(Number),
@@ -23,6 +29,22 @@ describe('UdemyHttpService', () => {
     previous: expect.any(String),
     results: expect.any(PickType(CourseResponseDto, ['results'])),
     aggregations: expect.any(PickType(CourseResponseDto, ['aggregations'])),
+  };
+
+  const discountStatusTaskDto: UpdateTaskDto = {
+    title: 'checkDiscountState-timestamp',
+    description: 'checking discount state from udemy api at 10/19/2023, 00:00:00 AM',
+    status: ETaskStatus.DONE,
+  };
+
+  const discountStatusTask = {
+    _id: expect.any(String),
+    ...discountStatusTaskDto,
+    result: expect.any(Object),
+    createdAt: expect.any(Date),
+    updatedAt: expect.any(Date),
+    deletedAt: expect.any(null),
+    __v: expect.any(Number),
   };
 
   let mockResponse: AxiosResponse = null;
@@ -39,6 +61,13 @@ describe('UdemyHttpService', () => {
           },
         },
         {
+          provide: getModelToken('Task'),
+          useValue: {
+            findOne: jest.fn(),
+            exec: jest.fn().mockResolvedValue(discountStatusTask),
+          },
+        },
+        {
           provide: HttpService,
           useValue: {
             get: jest.fn(),
@@ -49,6 +78,7 @@ describe('UdemyHttpService', () => {
 
     udemyHttpService = module.get<UdemyHttpService>(UdemyHttpService);
     httpService = module.get<HttpService>(HttpService);
+    taskModel = module.get<Model<Task>>(getModelToken('Task'));
   });
 
   it('should be defined', () => {
@@ -134,5 +164,26 @@ describe('UdemyHttpService', () => {
     });
 
     describe('and the udemy api returns no discount status', () => {});
+  });
+
+  describe('when getting the discount status from mongo db', () => {
+    it('should be defined', () => {
+      expect(udemyHttpService.getDiscountStatusFromMongo).toBeDefined();
+    });
+
+    // describe('and the mongo db returns discount status', () => {
+    //   beforeEach(() => {
+    //     jest.spyOn(taskModel, 'findOne').mockReturnValue({
+    //       exec: jest.fn().mockResolvedValueOnce(discountStatusTask),
+    //     } as any);
+    //   });
+    //   it('should return discount status', async () => {
+    //     expect(await udemyHttpService.getDiscountStatusFromMongo()).toMatchObject({
+    //       result: {
+    //         discountStatus: true,
+    //       },
+    //     });
+    //   });
+    // });
   });
 });
