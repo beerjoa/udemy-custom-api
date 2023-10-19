@@ -1,6 +1,7 @@
 import { inspect } from 'node:util';
 
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Timeout } from '@nestjs/schedule';
 import { Model } from 'mongoose';
@@ -15,6 +16,7 @@ export class UsersService {
 
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    private readonly configService: ConfigService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
   ) {}
 
@@ -28,6 +30,11 @@ export class UsersService {
   // Schedule Job
   @Timeout('createDummyUser', 5000)
   async createDummyUser(): Promise<User> {
+    const nodeEnv = this.configService.get<string>('common.nodeEnv');
+    if (nodeEnv === 'production') {
+      this.logger.log(`in production mode`, this.constructor.name);
+      return;
+    }
     const userDto = {
       tid: this.TID,
       email: this.EMAIL,

@@ -27,10 +27,16 @@ async function bootstrap() {
     .setTitle('Udemy Custom API')
     .setDescription('Udemy Custom API description')
     .setVersion('0.5.0')
+    .addSecurity('access-token', { type: 'http', scheme: 'Bearer' })
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('api-docs', app, document, {
+    swaggerOptions: {
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+  });
 
   app.enableCors();
 
