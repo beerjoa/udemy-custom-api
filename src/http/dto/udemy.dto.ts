@@ -1,5 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNumber, IsObject, IsUrl } from 'class-validator';
+import { ApiProperty, PickType, PartialType } from '@nestjs/swagger';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { IsArray, IsNumber, IsObject, IsUrl, ValidateNested } from 'class-validator';
+
+import { Task } from '#schemas';
 
 enum EInternalClass {
   Course = 'course',
@@ -158,4 +161,23 @@ export class PricingResponseDto {
   })
   @IsObject()
   bundle: any;
+}
+
+class TDiscountStatus {
+  discountStatus: boolean;
+}
+
+class TaskDto extends PartialType(PickType(Task, ['title', 'description', 'updatedAt'] as const)) {}
+@Exclude()
+export class DiscountStatusResponseDto extends TaskDto {
+  @ApiProperty({
+    type: Boolean,
+    description: 'The result of discount status',
+    example: true,
+  })
+  @Expose()
+  @IsObject()
+  @Type(() => TDiscountStatus)
+  @ValidateNested()
+  result: TDiscountStatus;
 }

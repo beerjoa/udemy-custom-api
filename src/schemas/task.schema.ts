@@ -21,6 +21,7 @@ export class Task {
   _id: string;
 
   @ApiProperty({
+    type: String,
     description: 'Task Title',
     example: 'This is a task title',
   })
@@ -29,6 +30,7 @@ export class Task {
   title: string;
 
   @ApiProperty({
+    type: String,
     description: 'Task Description',
     example: 'This is a task description',
   })
@@ -46,6 +48,7 @@ export class Task {
   status: ETaskStatus;
 
   @ApiProperty({
+    type: Object,
     description: 'Task Result',
     example: null,
   })
@@ -58,6 +61,7 @@ export class Task {
   result: object;
 
   @ApiProperty({
+    type: Date,
     description: 'Task Created At',
     example: new Date(),
   })
@@ -70,6 +74,7 @@ export class Task {
   createdAt: Date;
 
   @ApiProperty({
+    type: Date,
     description: 'Task Updated At',
     example: new Date(),
   })
