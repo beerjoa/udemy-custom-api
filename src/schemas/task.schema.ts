@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { HydratedDocument } from 'mongoose';
 
 export enum ETaskStatus {
@@ -24,6 +24,7 @@ export class Task {
     description: 'Task Title',
     example: 'This is a task title',
   })
+  @Expose()
   @Prop({ required: true })
   title: string;
 
@@ -31,6 +32,7 @@ export class Task {
     description: 'Task Description',
     example: 'This is a task description',
   })
+  @Expose()
   @Prop({ required: true })
   description: string;
 
@@ -39,6 +41,7 @@ export class Task {
     example: ETaskStatus.OPEN,
     enum: ETaskStatus,
   })
+  @Expose()
   @Prop({ required: true })
   status: ETaskStatus;
 
@@ -46,6 +49,7 @@ export class Task {
     description: 'Task Result',
     example: null,
   })
+  @Expose()
   @Prop({
     required: false,
     type: Object,
@@ -57,6 +61,7 @@ export class Task {
     description: 'Task Created At',
     example: new Date(),
   })
+  @Expose()
   @Prop({
     required: true,
     type: Date,
@@ -68,6 +73,7 @@ export class Task {
     description: 'Task Updated At',
     example: new Date(),
   })
+  @Expose()
   @Prop({
     type: Date,
     default: Date.now,
@@ -78,12 +84,14 @@ export class Task {
     description: 'Task Deleted At',
     example: null,
   })
+  @Expose()
   @Prop({
     type: Date,
     default: null,
   })
   deletedAt: Date;
 
+  @Exclude()
   @ApiProperty({
     description: 'Task Version',
     example: 0,
