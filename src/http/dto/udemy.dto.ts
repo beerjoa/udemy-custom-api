@@ -173,7 +173,9 @@ export class DiscountStatusResponseDto extends TaskDto {
   @ApiProperty({
     type: Boolean,
     description: 'The result of discount status',
-    example: true,
+    example: {
+      discountStatus: true,
+    },
   })
   @Expose()
   @IsObject()

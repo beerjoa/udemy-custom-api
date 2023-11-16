@@ -12,8 +12,8 @@ describe('UdemyController', () => {
   let udemyHttpService: Partial<UdemyHttpService>;
 
   const discountStatusTaskDto: UpdateTaskDto = {
-    title: 'checkDiscountState-timestamp',
-    description: 'checking discount state from udemy api at 10/19/2023, 00:00:00 AM',
+    title: 'checkDiscountStatus-timestamp',
+    description: 'checking discount status from udemy api at 10/19/2023, 00:00:00 AM',
   };
 
   const discountStatusTask: DiscountStatusResponseDto = {
