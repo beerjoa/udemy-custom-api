@@ -1,6 +1,6 @@
 {
   "name": "udemy-custom-api",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "",
   "author": "Jaeyong Shim <hello@beerjoa.dev>",
   "private": true,
@@ -42,6 +42,7 @@
     "axios": "^1.5.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "i18n-iso-countries": "^7.7.0",
     "mongoose": "^7.5.0",
     "nest-winston": "^1.9.4",
     "passport": "^0.6.0",
