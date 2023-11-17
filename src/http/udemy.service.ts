@@ -68,7 +68,8 @@ export class UdemyHttpService {
     return data.results.map((course) => course.id);
   }
 
-  async getDiscountStatusFromMongo(): Promise<DiscountStatusResponseDto> {
+  async getDiscountStatusFromMongo(countryCode: string): Promise<DiscountStatusResponseDto> {
+    countryCode;
     const task = await this.taskModel
       .findOne(
         { 'result.discountStatus': { $exists: true, $ne: null } },

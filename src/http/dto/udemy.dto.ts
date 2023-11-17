@@ -1,6 +1,8 @@
 import { ApiProperty, PickType, PartialType } from '@nestjs/swagger';
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { IsArray, IsNumber, IsObject, IsUrl, ValidateNested } from 'class-validator';
+
+import { IsCountryCode, IsCountryCodeOfUSRegion } from '#http/dto/validator';
 
 import { Task } from '#schemas';
 
@@ -182,4 +184,18 @@ export class DiscountStatusResponseDto extends TaskDto {
   @Type(() => TDiscountStatus)
   @ValidateNested()
   result: TDiscountStatus;
+}
+
+export class DiscountStatusQueryDTO {
+  @ApiProperty({
+    type: String,
+    description: 'Country Code',
+    example: 'US',
+  })
+  @Transform(({ value }) => value.toUpperCase())
+  @IsCountryCode({ message: 'Invalid country code' })
+  // We only handle discount status for the US region for now.
+  // it will be removed when we support other regions.
+  @IsCountryCodeOfUSRegion({ message: 'Only US Country code allowed' })
+  countryCode: string;
 }
