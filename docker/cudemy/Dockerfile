@@ -1,7 +1,7 @@
 # Backend Dockerfile
 FROM node:18.17.1-slim as base
 LABEL maintainer="hello@beerjoa.dev"
-LABEL build_date="2023-09-21"
+LABEL build_date="2023-10-26"
 
 RUN apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -q -y \
@@ -36,6 +36,8 @@ CMD ["npm", "run", "start:debug:docker"]
 
 # Production
 FROM base as production
+
+COPY .env.production ./.env
 
 RUN npm run build
 

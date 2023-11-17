@@ -1,7 +1,7 @@
-import { Controller, Get, HttpCode } from '@nestjs/common';
+import { Controller, Get, HttpCode, Query } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { DiscountStatusResponseDto } from '#http/dto/udemy.dto';
+import { DiscountStatusQueryDTO, DiscountStatusResponseDto } from '#http/dto/udemy.dto';
 import { UdemyHttpService } from '#http/udemy.service';
 
 @Controller('udemy')
@@ -13,7 +13,8 @@ export class UdemyController {
   @HttpCode(200)
   @ApiOkResponse({ status: 200, description: 'Get discount status successfully', type: DiscountStatusResponseDto })
   @ApiNotFoundResponse({ status: 404, description: 'Not found' })
-  async getDiscountStatus(): Promise<DiscountStatusResponseDto> {
-    return this.udemyHttpService.getDiscountStatusFromMongo();
+  async getDiscountStatus(@Query() discountStatusQuery: DiscountStatusQueryDTO): Promise<DiscountStatusResponseDto> {
+    const { countryCode } = discountStatusQuery;
+    return this.udemyHttpService.getDiscountStatusFromMongo(countryCode);
   }
 }

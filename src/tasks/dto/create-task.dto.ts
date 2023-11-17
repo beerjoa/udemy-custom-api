@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
 
-import { ETaskStatus } from '#schemas';
+import { ETaskStatus, ETaskType } from '#schemas';
 
 export class CreateTaskDto {
   @ApiProperty({
@@ -27,4 +27,12 @@ export class CreateTaskDto {
   })
   @IsEnum(ETaskStatus)
   status: ETaskStatus;
+
+  @ApiProperty({
+    description: 'Task Status',
+    example: ETaskType.NONE,
+    enum: ETaskType,
+  })
+  @IsEnum(ETaskType)
+  type: ETaskType;
 }
