@@ -9,7 +9,7 @@ import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 import { TasksService } from '#tasks/tasks.service';
 
-import { ETaskStatus, Task } from '#schemas';
+import { ETaskStatus, ETaskType, Task } from '#schemas';
 
 describe('TasksService', () => {
   let taskService: TasksService;
@@ -19,12 +19,16 @@ describe('TasksService', () => {
     title: 'test',
     description: 'test',
     status: ETaskStatus.OPEN,
+    type: ETaskType.NONE,
+    result: { test: 'test' },
   };
 
   const updateTaskDto: UpdateTaskDto = {
-    title: 'test',
-    description: 'test',
+    title: 'test2',
+    description: 'test2',
     status: ETaskStatus.DONE,
+    type: ETaskType.NONE,
+    result: { test: 'udpated test' },
   };
 
   const createdTask = {

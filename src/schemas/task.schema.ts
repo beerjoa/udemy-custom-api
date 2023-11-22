@@ -11,6 +11,11 @@ export enum ETaskStatus {
   CANCELED = 'CANCELED',
 }
 
+export enum ETaskType {
+  NONE = 'NONE',
+  CHECK_DISCOUNT_STATUS = 'CHECK_DISCOUNT_STATUS',
+}
+
 @Schema()
 export class Task {
   @Exclude()
@@ -48,9 +53,20 @@ export class Task {
   status: ETaskStatus;
 
   @ApiProperty({
+    description: 'Task Type',
+    example: ETaskType.CHECK_DISCOUNT_STATUS,
+    enum: ETaskType,
+  })
+  @Expose()
+  @Prop({ required: false, default: ETaskType.NONE })
+  type: ETaskType;
+
+  @ApiProperty({
     type: Object,
     description: 'Task Result',
-    example: null,
+    example: {
+      test: 'test',
+    },
   })
   @Expose()
   @Prop({

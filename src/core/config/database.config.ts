@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 
-const databaseConfig = registerAs('database', () => ({
+export const databaseConfig = registerAs('database', () => ({
   mongo: {
     host: process.env.MONGO_HOST || 'localhost',
     port: parseInt(process.env.MONGO_PORT, 10) || 27017,
@@ -21,5 +21,3 @@ const databaseConfig = registerAs('database', () => ({
     uri: `postgres://${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}`,
   },
 }));
-
-export default databaseConfig;

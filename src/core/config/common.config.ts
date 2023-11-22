@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 
-const commonConfig = registerAs('common', () => ({
+export const commonConfig = registerAs('common', () => ({
   nodeEnv: process.env.NODE_ENV,
   appName: process.env.APP_NAME,
   host: process.env.HOST,
@@ -19,5 +19,3 @@ export const authConfig = registerAs('auth', () => ({
     accessExpirationTime: process.env.JWT_ACCESS_EXPIRATION_TIME || '60s',
   },
 }));
-
-export default commonConfig;

@@ -3,7 +3,7 @@ import { PickType } from '@nestjs/mapped-types';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { of } from 'rxjs';
 
@@ -18,6 +18,7 @@ describe('UdemyHttpService', () => {
   let httpService: HttpService;
   let taskModel: Model<Task>;
 
+  const countryCode = 'US';
   const courseQueryDto: CourseQueryDto = {
     page_size: expect.any(Number),
     page: expect.any(Number),
@@ -32,15 +33,17 @@ describe('UdemyHttpService', () => {
   };
 
   const discountStatusTaskDto: UpdateTaskDto = {
-    title: 'checkDiscountState-timestamp',
-    description: 'checking discount state from udemy api at 10/19/2023, 00:00:00 AM',
+    title: 'checkDiscountStatus-timestamp',
+    description: 'checking discount status from udemy api at 10/19/2023, 00:00:00 AM',
     status: ETaskStatus.DONE,
+    result: {
+      discountStatus: true,
+    },
   };
 
   const discountStatusTask = {
     _id: expect.any(String),
     ...discountStatusTaskDto,
-    result: expect.any(Object),
     createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
     deletedAt: expect.any(null),
@@ -103,7 +106,7 @@ describe('UdemyHttpService', () => {
         courseResponse.results.map = jest.fn().mockReturnValueOnce([expect.any(Number)]);
       });
       it('should return course ids', async () => {
-        expect(await udemyHttpService.getCourseIdsFromApi()).toMatchObject([expect.any(Number)]);
+        expect(await udemyHttpService.getCourseIdsFromApi(countryCode)).toMatchObject([expect.any(Number)]);
       });
     });
 
@@ -119,7 +122,7 @@ describe('UdemyHttpService', () => {
         jest.spyOn(httpService, 'get').mockReturnValueOnce(of(mockResponse));
       });
       it('should throw NotFoundException', async () => {
-        await expect(udemyHttpService.getCourseIdsFromApi()).rejects.toThrowError('No courses found');
+        await expect(udemyHttpService.getCourseIdsFromApi(countryCode)).rejects.toThrowError('No courses found');
       });
     });
   });
@@ -159,7 +162,7 @@ describe('UdemyHttpService', () => {
         jest.spyOn(httpService, 'get').mockReturnValueOnce(of(mockResponse));
       });
       it('should return true', async () => {
-        expect(await udemyHttpService.getDiscountStatusFromApi([expect.any(Number)])).toBeTruthy();
+        expect(await udemyHttpService.getDiscountStatusFromApi(countryCode, [expect.any(Number)])).toBeTruthy();
       });
     });
 

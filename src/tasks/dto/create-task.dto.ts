@@ -1,30 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString } from 'class-validator';
+import { PickType } from '@nestjs/swagger';
 
-import { ETaskStatus } from '#schemas';
+import { Task } from '#schemas';
 
-export class CreateTaskDto {
-  @ApiProperty({
-    description: 'Task Title',
-    example: 'This is a task title',
-    type: String,
-  })
-  @IsString()
-  title: string;
+export class TaskDto extends PickType(Task, ['title', 'description', 'status', 'type', 'result'] as const) {}
 
-  @ApiProperty({
-    description: 'Task Description',
-    example: 'This is a task description',
-    type: String,
-  })
-  @IsString()
-  description: string;
-
-  @ApiProperty({
-    description: 'Task Status',
-    example: ETaskStatus.OPEN,
-    enum: ETaskStatus,
-  })
-  @IsEnum(ETaskStatus)
-  status: ETaskStatus;
-}
+export class CreateTaskDto extends TaskDto {}

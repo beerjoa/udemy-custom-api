@@ -3,6 +3,7 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -19,20 +20,35 @@ export class UdemyHttpService {
     private readonly httpService: HttpService,
   ) {}
 
-  async getDiscountStatusFromApi(course_ids: number[]): Promise<boolean> {
+  private getCountryHeader(countryCode: string): Record<string, string> {
+    return {
+      'X-Udemy-Cache-Brand': `${countryCode}en_US`,
+      'X-Udemy-Cache-Language': 'en',
+      'X-Udemy-Cache-Marketplace-Country': `${countryCode}`,
+      'X-Udemy-Cache-Price-Country': `${countryCode}`,
+    };
+  }
+
+  async getDiscountStatusFromApi(countryCode: string, courseIds: number[]): Promise<boolean> {
+    const headers = this.getCountryHeader(countryCode);
     const { data } = await firstValueFrom(
-      this.httpService.get<PricingResponseDto>('/pricing', { params: { course_ids: course_ids.join(',') } }).pipe(
-        catchError((error: AxiosError) => {
-          throw error;
-        }),
-      ),
+      this.httpService
+        .get<PricingResponseDto>('/pricing/', { params: { course_ids: courseIds.join(',') }, headers })
+        .pipe(
+          catchError((error: AxiosError) => {
+            throw error;
+          }),
+        ),
     );
 
     const courses = Object.values(data.courses);
+    this.logger.debug(`courses: ${courses.map((course) => course.has_discount_saving)}`, this.constructor.name);
 
-    return courses.every((course) => course.has_discount_saving);
+    const discountCoursesCount = courses.filter((course) => course.has_discount_saving).length;
+    return discountCoursesCount > Math.floor(courses.length / 2);
   }
-  async getCourseIdsFromApi(): Promise<number[]> {
+  async getCourseIdsFromApi(countryCode: string): Promise<number[]> {
+    const headers = this.getCountryHeader(countryCode);
     const params: CourseQueryDto = {
       page_size: 10,
       page: 1,
@@ -40,7 +56,7 @@ export class UdemyHttpService {
     };
 
     const { data } = await firstValueFrom(
-      this.httpService.get<CourseResponseDto>('/courses', { params }).pipe(
+      this.httpService.get<CourseResponseDto>('/courses/', { params, headers }).pipe(
         catchError((error: AxiosError) => {
           this.logger.error(error, this.constructor.name);
           throw error;
@@ -53,25 +69,34 @@ export class UdemyHttpService {
     return data.results.map((course) => course.id);
   }
 
-  async getDiscountStatusFromMongo(): Promise<DiscountStatusResponseDto> {
-    const task = await this.taskModel
-      .findOne(
-        { 'result.discountStatus': { $exists: true, $ne: null } },
-        {},
-        {
-          sort: {
-            updatedAt: -1,
+  async getDiscountStatusFromMongo(countryCode: string): Promise<DiscountStatusResponseDto> {
+    try {
+      countryCode;
+      const task = await this.taskModel
+        .findOne(
+          { 'result.discountStatus': { $exists: true, $ne: null } },
+          {},
+          {
+            sort: {
+              updatedAt: -1,
+            },
           },
-        },
-      )
-      .exec();
+        )
+        .exec();
 
-    if (!task) {
+      if (!task) {
+        throw new NotFoundException(`Not found, Discount Status`);
+      }
+
+      const discountStatus = plainToClass(DiscountStatusResponseDto, task);
+
+      await validateOrReject(discountStatus);
+
+      return discountStatus;
+    } catch (error) {
+      this.logger.error(error, this.constructor.name);
+      console.log(error.toString());
       throw new NotFoundException(`Not found, Discount Status`);
     }
-
-    const discountStatus = plainToClass(DiscountStatusResponseDto, task.toObject());
-
-    return discountStatus;
   }
 }

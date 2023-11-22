@@ -10,7 +10,7 @@ import { UdemyHttpService } from '#http/udemy.service';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 
-import { ETaskStatus, Task } from '#schemas';
+import { ETaskStatus, ETaskType, Task } from '#schemas';
 
 @Injectable()
 export class TasksService {
@@ -55,6 +55,8 @@ export class TasksService {
     const task = await this.findOne(task_id);
 
     Object.assign(task, updateTaskDto);
+    task.updatedAt = new Date();
+
     await this.taskModel.updateOne({ _id: task_id }, task).exec();
 
     return task;
@@ -68,19 +70,21 @@ export class TasksService {
 
   // Schedule Job
   @Cron(CronExpression.EVERY_HOUR)
-  async checkDiscountState(): Promise<boolean> {
+  async checkDiscountStatus(): Promise<boolean> {
+    const countryCode = 'US';
     const nowDate = new Date();
     const task = await this.taskModel.create({
-      title: `checkDiscountState-${nowDate.getTime()}`,
-      description: `checking discount state from udemy api at ${nowDate.toLocaleString()}`,
+      title: `checkDiscountStatus-${countryCode}-${nowDate.getTime()}`,
+      description: `checking discount status for ${countryCode} from udemy api at ${nowDate.toLocaleString()}`,
       status: ETaskStatus.OPEN,
+      type: ETaskType.CHECK_DISCOUNT_STATUS,
     });
 
     try {
       task.status = ETaskStatus.IN_PROGRESS;
 
-      const course_ids = await this.udemyHttpService.getCourseIdsFromApi();
-      const discountStatus = await this.udemyHttpService.getDiscountStatusFromApi(course_ids);
+      const courseIds = await this.udemyHttpService.getCourseIdsFromApi(countryCode);
+      const discountStatus = await this.udemyHttpService.getDiscountStatusFromApi(countryCode, courseIds);
 
       task.result = { discountStatus };
       task.status = ETaskStatus.DONE;

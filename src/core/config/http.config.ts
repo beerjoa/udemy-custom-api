@@ -1,7 +1,7 @@
 import { HttpModuleAsyncOptions, HttpModuleOptions } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-const httpConfigAsync: HttpModuleAsyncOptions = {
+export const httpConfigAsync: HttpModuleAsyncOptions = {
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService): Promise<HttpModuleOptions> => ({
     baseURL: configService.get<string>('http.baseURL'),
@@ -13,5 +13,3 @@ const httpConfigAsync: HttpModuleAsyncOptions = {
   }),
   inject: [ConfigService],
 };
-
-export default httpConfigAsync;

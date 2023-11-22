@@ -52,7 +52,7 @@ const globalFormat = (appName: string) => {
   );
 };
 
-const winstonConfigAsync: WinstonModuleAsyncOptions = {
+export const winstonConfigAsync: WinstonModuleAsyncOptions = {
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService): Promise<WinstonModuleOptions> => ({
     level: configService.get<string>('common.nodeEnv') !== 'production' ? 'debug' : 'info',
@@ -65,5 +65,3 @@ const winstonConfigAsync: WinstonModuleAsyncOptions = {
   }),
   inject: [ConfigService],
 };
-
-export default winstonConfigAsync;

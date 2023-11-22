@@ -6,7 +6,7 @@ import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 import { TasksController } from '#tasks/tasks.controller';
 import { TasksService } from '#tasks/tasks.service';
 
-import { ETaskStatus } from '#schemas';
+import { ETaskStatus, ETaskType, Task } from '#schemas';
 
 describe('TasksController', () => {
   let taskController: TasksController;
@@ -16,18 +16,21 @@ describe('TasksController', () => {
     title: 'test',
     description: 'test',
     status: ETaskStatus.OPEN,
+    type: ETaskType.NONE,
+    result: { test: 'test' },
   };
 
   const updateTaskDto: UpdateTaskDto = {
-    title: 'test',
-    description: 'test',
+    title: 'test2',
+    description: 'test2',
     status: ETaskStatus.DONE,
+    type: ETaskType.NONE,
+    result: { test: 'updated test' },
   };
 
-  const createdTask = {
+  const createdTask: Task = {
     _id: expect.any(String),
     ...createTaskDto,
-    result: expect.any(Object),
     createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
     deletedAt: expect.any(null),

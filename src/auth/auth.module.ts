@@ -7,7 +7,7 @@ import { AuthController } from '#auth/auth.controller';
 import { AuthService } from '#auth/auth.service';
 import { JwtStrategy, LocalStrategy } from '#auth/strategy';
 import { UsersService } from '#auth/users.service';
-import jwtConfigAsync from '#core/jwt.config';
+import { jwtConfigAsync } from '#core/config';
 
 import { BlacklistSchema, UserSchema } from '#schemas';
 
