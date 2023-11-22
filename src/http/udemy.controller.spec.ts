@@ -6,8 +6,6 @@ import { UdemyController } from '#http/udemy.controller';
 import { UdemyHttpService } from '#http/udemy.service';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 
-import { ETaskStatus } from '#schemas';
-
 describe('UdemyController', () => {
   let udemyController: UdemyController;
   let udemyHttpService: Partial<UdemyHttpService>;

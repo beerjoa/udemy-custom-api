@@ -3,6 +3,7 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -69,25 +70,33 @@ export class UdemyHttpService {
   }
 
   async getDiscountStatusFromMongo(countryCode: string): Promise<DiscountStatusResponseDto> {
-    countryCode;
-    const task = await this.taskModel
-      .findOne(
-        { 'result.discountStatus': { $exists: true, $ne: null } },
-        {},
-        {
-          sort: {
-            updatedAt: -1,
+    try {
+      countryCode;
+      const task = await this.taskModel
+        .findOne(
+          { 'result.discountStatus': { $exists: true, $ne: null } },
+          {},
+          {
+            sort: {
+              updatedAt: -1,
+            },
           },
-        },
-      )
-      .exec();
+        )
+        .exec();
 
-    if (!task) {
+      if (!task) {
+        throw new NotFoundException(`Not found, Discount Status`);
+      }
+
+      const discountStatus = plainToClass(DiscountStatusResponseDto, task);
+
+      await validateOrReject(discountStatus);
+
+      return discountStatus;
+    } catch (error) {
+      this.logger.error(error, this.constructor.name);
+      console.log(error.toString());
       throw new NotFoundException(`Not found, Discount Status`);
     }
-
-    const discountStatus = plainToClass(DiscountStatusResponseDto, task.toObject());
-
-    return discountStatus;
   }
 }

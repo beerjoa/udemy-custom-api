@@ -189,7 +189,7 @@ export class DiscountStatusResponseDto extends TaskDto {
 export class DiscountStatusQueryDTO {
   @ApiProperty({
     type: String,
-    description: 'Country Code',
+    description: 'Country Code (Alpha-2)',
     example: 'US',
   })
   @Transform(({ value }) => value.toUpperCase())

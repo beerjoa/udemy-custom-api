@@ -1,6 +1,6 @@
 {
   "name": "udemy-custom-api",
-  "version": "0.5.0",
+  "version": "0.3.0",
   "description": "",
   "author": "Jaeyong Shim <hello@beerjoa.dev>",
   "private": true,
@@ -51,6 +51,7 @@
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
+    "swagger-themes": "^1.2.30",
     "typeorm": "^0.3.17",
     "winston": "^3.10.0"
   },
