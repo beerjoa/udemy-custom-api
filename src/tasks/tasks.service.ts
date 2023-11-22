@@ -55,6 +55,8 @@ export class TasksService {
     const task = await this.findOne(task_id);
 
     Object.assign(task, updateTaskDto);
+    task.updatedAt = new Date();
+
     await this.taskModel.updateOne({ _id: task_id }, task).exec();
 
     return task;

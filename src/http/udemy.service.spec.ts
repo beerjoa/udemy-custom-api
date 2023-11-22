@@ -3,7 +3,7 @@ import { PickType } from '@nestjs/mapped-types';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { of } from 'rxjs';
 
@@ -36,12 +36,14 @@ describe('UdemyHttpService', () => {
     title: 'checkDiscountStatus-timestamp',
     description: 'checking discount status from udemy api at 10/19/2023, 00:00:00 AM',
     status: ETaskStatus.DONE,
+    result: {
+      discountStatus: true,
+    },
   };
 
   const discountStatusTask = {
     _id: expect.any(String),
     ...discountStatusTaskDto,
-    result: expect.any(Object),
     createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
     deletedAt: expect.any(null),

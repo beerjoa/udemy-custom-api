@@ -64,7 +64,9 @@ export class Task {
   @ApiProperty({
     type: Object,
     description: 'Task Result',
-    example: null,
+    example: {
+      test: 'test',
+    },
   })
   @Expose()
   @Prop({

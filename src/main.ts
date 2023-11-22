@@ -1,7 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, OpenAPIObject, SwaggerCustomOptions, SwaggerModule } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { SwaggerTheme } from 'swagger-themes';
 
 import { AppModule } from '#/app.module';
 
@@ -11,7 +13,8 @@ declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  const configService = app.get(ConfigService);
+  const SWAGGER = configService.get('swagger');
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   app.setGlobalPrefix('api');
@@ -24,19 +27,29 @@ async function bootstrap() {
   );
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Udemy Custom API')
-    .setDescription('Udemy Custom API description')
-    .setVersion('0.5.0')
+    .setTitle(SWAGGER.title)
+    .setDescription(SWAGGER.description)
+    .setVersion(SWAGGER.version)
+    .setContact(SWAGGER.contact.name, SWAGGER.contact.url, SWAGGER.contact.email)
+    .setLicense(SWAGGER.license.name, SWAGGER.license.url)
+    .addServer(SWAGGER.server.url, SWAGGER.server.description)
     .addSecurity('access-token', { type: 'http', scheme: 'Bearer' })
+    .addTag('auth', 'Operations about authentication')
+    .addTag('tasks', 'Operations about scheduled tasks')
+    .addTag('udemy', 'Operations about Udemy')
     .build();
 
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document, {
+  const document: OpenAPIObject = SwaggerModule.createDocument(app, swaggerConfig);
+  const theme = new SwaggerTheme('v3');
+  const options: SwaggerCustomOptions = {
+    explorer: false,
+    customCss: theme.getBuffer('flattop'),
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
     },
-  });
+  };
+  SwaggerModule.setup('api-docs', app, document, options);
 
   app.enableCors();
 
