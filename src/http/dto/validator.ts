@@ -1,6 +1,8 @@
 import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
 import * as i18nIsoCountries from 'i18n-iso-countries';
 
+import { ECountryCode } from '#http/dto/udemy.dto';
+
 export function IsCountryCode(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
@@ -31,9 +33,10 @@ export function IsCountryCodeOfUSRegion(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          const _USCodeCheck = value === 'US';
+          const allowedCountryCodeArray = Object.keys(ECountryCode);
+          const isAllowedCountryCode = allowedCountryCodeArray.includes(value);
 
-          return _USCodeCheck;
+          return isAllowedCountryCode;
         },
       },
     });
