@@ -1,7 +1,9 @@
-import { Controller, Get, HttpCode, Query } from '@nestjs/common';
+import { Controller, Get, HttpCode, NotFoundException, Query } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 
-import { DiscountStatusQueryDTO, DiscountStatusResponseDto } from '#http/dto/udemy.dto';
+import { DiscountStatusQueryDto, DiscountStatusResponseDto } from '#http/dto/udemy.dto';
 import { UdemyHttpService } from '#http/udemy.service';
 
 @Controller('udemy')
@@ -20,8 +22,17 @@ export class UdemyController {
       'It returns the discount status of a specific region by Country Codes Alpha-2, such as US, KR, JP, etc.',
     operationId: 'getDiscountStatus',
   })
-  async getDiscountStatus(@Query() discountStatusQuery: DiscountStatusQueryDTO): Promise<DiscountStatusResponseDto> {
-    const { countryCode } = discountStatusQuery;
-    return this.udemyHttpService.getDiscountStatusFromMongo(countryCode);
+  async getDiscountStatus(@Query() discountStatusQuery: DiscountStatusQueryDto): Promise<DiscountStatusResponseDto> {
+    try {
+      const { countryCode } = discountStatusQuery;
+      const result = await this.udemyHttpService.getDiscountStatusFromMongo(countryCode);
+
+      const transformedResult = plainToInstance(DiscountStatusResponseDto, result);
+      await validateOrReject(transformedResult);
+
+      return transformedResult;
+    } catch (error) {
+      throw new NotFoundException('Not found, Discount Status');
+    }
   }
 }

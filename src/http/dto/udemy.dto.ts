@@ -1,6 +1,6 @@
 import { ApiProperty, PickType, PartialType } from '@nestjs/swagger';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
-import { IsArray, IsNumber, IsObject, IsUrl, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsNumber, IsObject, IsOptional, IsUrl, ValidateNested } from 'class-validator';
 
 import { IsCountryCode, IsCountryCodeOfUSRegion } from '#http/dto/validator';
 
@@ -165,19 +165,40 @@ export class PricingResponseDto {
   bundle: any;
 }
 
-class TDiscountStatus {
+export class TDiscountStatus {
+  @ApiProperty({
+    type: Boolean,
+    description: 'Discount Status',
+    example: true,
+  })
+  @IsBoolean()
   discountStatus: boolean;
+
+  @ApiProperty({
+    type: Date,
+    description: 'Discount Started At',
+    example: new Date(),
+  })
+  @IsDate()
+  @IsOptional()
+  startedAt: Date;
+
+  @ApiProperty({
+    type: Date,
+    description: 'Discount Ended At',
+    example: new Date(),
+  })
+  @IsDate()
+  @IsOptional()
+  endedAt: Date;
 }
 
 class TaskDto extends PartialType(PickType(Task, ['title', 'description', 'updatedAt'] as const)) {}
 @Exclude()
 export class DiscountStatusResponseDto extends TaskDto {
   @ApiProperty({
-    type: Boolean,
+    type: TDiscountStatus,
     description: 'The result of discount status',
-    example: {
-      discountStatus: true,
-    },
   })
   @Expose()
   @IsObject()
@@ -186,7 +207,7 @@ export class DiscountStatusResponseDto extends TaskDto {
   result: TDiscountStatus;
 }
 
-export class DiscountStatusQueryDTO {
+export class DiscountStatusQueryDto {
   @ApiProperty({
     type: String,
     description: 'Country Code (Alpha-2)',

@@ -28,7 +28,7 @@ describe('TasksService', () => {
     description: 'test2',
     status: ETaskStatus.DONE,
     type: ETaskType.NONE,
-    result: { test: 'udpated test' },
+    result: { test: 'updated test' },
   };
 
   const createdTask = {

@@ -85,8 +85,9 @@ export class TasksService {
 
       const courseIds = await this.udemyHttpService.getCourseIdsFromApi(countryCode);
       const discountStatus = await this.udemyHttpService.getDiscountStatusFromApi(countryCode, courseIds);
+      const discountPeriods = await this.udemyHttpService.checkDiscountStatusChange(discountStatus);
 
-      task.result = { discountStatus };
+      task.result = { discountStatus, ...discountPeriods };
       task.status = ETaskStatus.DONE;
 
       this.logger.debug(`discountStatus: ${discountStatus}`, this.constructor.name);
@@ -105,7 +106,10 @@ export class TasksService {
   }
 
   // minute hour day month day-of-week
-  @Cron('*/14 * * * *')
+  @Cron('*/14 * * * *', {
+    name: 'wakeUpRenderFreeTierServerForRender',
+    disabled: true,
+  })
   async wakeUpRenderFreeTierServer(): Promise<boolean> {
     // Render spins down free tier servers after 15 minutes of inactivity
     this.logger.log(`wakeUpRenderFreeTierServer`, this.constructor.name);
