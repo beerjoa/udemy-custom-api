@@ -84,7 +84,7 @@ export class TasksService {
 
       const courseIds = await this.udemyHttpService.getCourseIdsFromApi(countryCode);
       const discountStatus = await this.udemyHttpService.getDiscountStatusFromApi(countryCode, courseIds);
-      const discountPeriods = await this.udemyHttpService.checkDiscountStatusChange(discountStatus);
+      const discountPeriods = await this.udemyHttpService.checkDiscountStatusChange(countryCode, discountStatus);
 
       task.result = { discountStatus, countryCode, ...discountPeriods };
       task.status = ETaskStatus.DONE;

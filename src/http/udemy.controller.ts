@@ -22,10 +22,18 @@ export class UdemyController {
       'It returns the discount status of a specific region by Country Codes Alpha-2, such as US, KR, JP, etc.',
     operationId: 'getDiscountStatus',
   })
-  async getDiscountStatus(@Query() discountStatusQuery: DiscountStatusQueryDto): Promise<DiscountStatusResponseDto> {
+  async getDiscountStatus(
+    @Query() discountStatusQuery: DiscountStatusQueryDto,
+  ): Promise<DiscountStatusResponseDto | DiscountStatusResponseDto[]> {
     try {
       const { countryCode } = discountStatusQuery;
-      const result = await this.udemyHttpService.getDiscountStatusFromMongo(countryCode);
+      let result;
+
+      if (countryCode === undefined) {
+        result = await this.udemyHttpService.getDiscountStatusOfEveryCountryFromMongo();
+      } else {
+        result = await this.udemyHttpService.getDiscountStatusFromMongo(countryCode);
+      }
 
       const transformedResult = plainToInstance(DiscountStatusResponseDto, result);
       await validateOrReject(transformedResult);

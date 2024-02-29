@@ -41,6 +41,7 @@ describe('UdemyController', () => {
   beforeEach(async () => {
     udemyHttpService = {
       getDiscountStatusFromMongo: () => Promise.resolve(discountStatusTask),
+      getDiscountStatusOfEveryCountryFromMongo: () => Promise.resolve([discountStatusTask]),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -69,11 +70,15 @@ describe('UdemyController', () => {
     });
 
     describe('and get discount status successfully', () => {
-      beforeEach(() => {
+      it('should return discount status for specific country', async () => {
         jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue(discountStatusTask);
-      });
-      it('should return discount status', async () => {
         expect(await udemyController.getDiscountStatus(DiscountStatusQueryDto)).toEqual(discountStatusTask);
+      });
+
+      it('should return discount status for every country', async () => {
+        jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue([discountStatusTask]);
+        const DiscountStatusQueryDto = { countryCode: undefined };
+        expect(await udemyController.getDiscountStatus(DiscountStatusQueryDto)).toEqual([discountStatusTask]);
       });
     });
   });

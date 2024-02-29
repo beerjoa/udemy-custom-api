@@ -8,18 +8,18 @@ import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { of } from 'rxjs';
 
-import { CourseResponseDto, CourseQueryDto, DiscountStatusResponseDto } from '#http/dto/udemy.dto';
+import { CourseResponseDto, CourseQueryDto, DiscountStatusResponseDto, ECountryCode } from '#http/dto/udemy.dto';
 import { UdemyHttpService } from '#http/udemy.service';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
 
-import { ETaskStatus, Task } from '#schemas';
+import { ETaskStatus, ETaskType, Task } from '#schemas';
 
 describe('UdemyHttpService', () => {
   let udemyHttpService: UdemyHttpService;
   let httpService: HttpService;
   let taskModel: Model<Task>;
 
-  const countryCode = 'US';
+  const countryCode = ECountryCode.US;
   const courseQueryDto: CourseQueryDto = {
     page_size: expect.any(Number),
     page: expect.any(Number),
@@ -37,6 +37,7 @@ describe('UdemyHttpService', () => {
     title: 'checkDiscountStatus-timestamp',
     description: 'checking discount status from udemy api at 10/19/2023, 00:00:00 AM',
     status: ETaskStatus.DONE,
+    type: ETaskType.CHECK_DISCOUNT_STATUS,
     result: {
       discountStatus: true,
       startedAt: expect.any(Date),
@@ -44,9 +45,17 @@ describe('UdemyHttpService', () => {
     },
   };
 
-  const discountStatusTask = {
+  const discountStatusTask: Task = {
     _id: expect.any(String),
-    ...discountStatusTaskDto,
+    title: 'checkDiscountStatus-timestamp',
+    description: 'checking discount status from udemy api at 10/19/2023, 00:00:00 AM',
+    status: ETaskStatus.DONE,
+    type: ETaskType.CHECK_DISCOUNT_STATUS,
+    result: {
+      discountStatus: true,
+      startedAt: expect.any(Date),
+      endedAt: expect.any(Date),
+    },
     createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
     deletedAt: expect.any(null),
@@ -70,7 +79,8 @@ describe('UdemyHttpService', () => {
           provide: getModelToken('Task'),
           useValue: {
             findOne: jest.fn(),
-            exec: jest.fn().mockResolvedValue(discountStatusTask),
+            exec: jest.fn().mockResolvedValue(null),
+            aggregate: jest.fn().mockResolvedValue(null),
           },
         },
         {
@@ -194,8 +204,9 @@ describe('UdemyHttpService', () => {
         jest.spyOn(taskModel, 'findOne').mockReturnValue({
           exec: jest.fn().mockResolvedValueOnce(discountStatusTask),
         } as any);
+        jest.spyOn(taskModel, 'aggregate').mockResolvedValueOnce([discountStatusTask]);
       });
-      it('should return discount status', async () => {
+      it('should return discount status for specific country', async () => {
         expect(await udemyHttpService.getDiscountStatusFromMongo(countryCode)).toMatchObject({
           result: {
             discountStatus: true,
@@ -203,6 +214,9 @@ describe('UdemyHttpService', () => {
             endedAt: expect.any(Date),
           },
         });
+      });
+      it('should return discount status for every country', async () => {
+        expect(await udemyHttpService.getDiscountStatusOfEveryCountryFromMongo()).toEqual([discountStatusTask]);
       });
     });
 
@@ -220,7 +234,7 @@ describe('UdemyHttpService', () => {
         } as any);
       });
       it('should return previous discount period', async () => {
-        expect(await udemyHttpService.checkDiscountStatusChange(true)).toEqual({
+        expect(await udemyHttpService.checkDiscountStatusChange(countryCode, true)).toEqual({
           startedAt: expect.any(Date),
           endedAt: expect.any(Date),
         });
