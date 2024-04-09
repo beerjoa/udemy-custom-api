@@ -7,6 +7,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { catchError, firstValueFrom } from 'rxjs';
 
 import {
+  ECountryCode,
   CourseQueryDto,
   CourseResponseDto,
   PricingResponseDto,
@@ -24,7 +25,7 @@ export class UdemyHttpService {
     private readonly httpService: HttpService,
   ) {}
 
-  private getCountryHeader(countryCode: string): Record<string, string> {
+  private getCountryHeader(countryCode: ECountryCode): Record<string, string> {
     return {
       'X-Udemy-Cache-Brand': `${countryCode}en_US`,
       'X-Udemy-Cache-Language': 'en',
@@ -33,7 +34,7 @@ export class UdemyHttpService {
     };
   }
 
-  async getDiscountStatusFromApi(countryCode: string, courseIds: number[]): Promise<boolean> {
+  async getDiscountStatusFromApi(countryCode: ECountryCode, courseIds: number[]): Promise<boolean> {
     const headers = this.getCountryHeader(countryCode);
     const { data } = await firstValueFrom(
       this.httpService
@@ -51,7 +52,7 @@ export class UdemyHttpService {
     const discountCoursesCount = courses.filter((course) => course.has_discount_saving).length;
     return discountCoursesCount >= Math.floor(courses.length / 2);
   }
-  async getCourseIdsFromApi(countryCode: string): Promise<number[]> {
+  async getCourseIdsFromApi(countryCode: ECountryCode): Promise<number[]> {
     const headers = this.getCountryHeader(countryCode);
     const params: CourseQueryDto = {
       page_size: 10,
@@ -73,7 +74,10 @@ export class UdemyHttpService {
     return data.results.map((course) => course.id);
   }
 
-  async checkDiscountStatusChange(currentStatus: boolean): Promise<Partial<TDiscountStatus>> {
+  async checkDiscountStatusChange(
+    countryCode: ECountryCode,
+    currentStatus: boolean,
+  ): Promise<Partial<TDiscountStatus>> {
     const discountsPeriods: Partial<TDiscountStatus> = {
       startedAt: null,
       endedAt: null,
@@ -81,7 +85,11 @@ export class UdemyHttpService {
 
     const task = await this.taskModel
       .findOne(
-        { type: ETaskType.CHECK_DISCOUNT_STATUS, 'result.discountStatus': { $exists: true, $ne: null } },
+        {
+          type: ETaskType.CHECK_DISCOUNT_STATUS,
+          'result.discountStatus': { $exists: true, $ne: null },
+          'result.countryCode': countryCode,
+        },
         {},
         { sort: { updatedAt: -1 } },
       )
@@ -99,8 +107,10 @@ export class UdemyHttpService {
         discountsPeriods.endedAt = dateAt;
       }
     } else {
+      // if (currentStatus && previousStatus.result.discountStatus) {
       discountsPeriods.startedAt = previousStatus.result.startedAt;
       discountsPeriods.endedAt = previousStatus.result.endedAt;
+      // }
     }
     this.logger.debug(`discountsPeriods: ${JSON.stringify(discountsPeriods)}`, this.constructor.name);
     return discountsPeriods;
@@ -108,9 +118,12 @@ export class UdemyHttpService {
 
   async getDiscountStatusFromMongo(countryCode: string): Promise<Task> {
     try {
-      countryCode;
       const task = await this.taskModel
-        .findOne({ 'result.discountStatus': { $exists: true, $ne: null } }, {}, { sort: { updatedAt: -1 } })
+        .findOne(
+          { 'result.discountStatus': { $exists: true, $ne: null }, 'result.countryCode': countryCode },
+          {},
+          { sort: { updatedAt: -1 } },
+        )
         .exec();
 
       if (!task) {
@@ -118,6 +131,59 @@ export class UdemyHttpService {
       }
 
       return task;
+    } catch (error) {
+      this.logger.error(error, this.constructor.name);
+      throw new NotFoundException(`Not found, Discount Status`);
+    }
+  }
+  async getDiscountStatusOfEveryCountryFromMongo(): Promise<Task[]> {
+    try {
+      const tasks = await this.taskModel.aggregate([
+        {
+          $match: {
+            'result.countryCode': { $exists: true, $ne: null },
+            'result.discountStatus': { $exists: true, $ne: null },
+            'result.startedAt': { $exists: true },
+            'result.endedAt': { $exists: true },
+          },
+        },
+        { $sort: { updatedAt: -1, 'result.countryCode': -1 } },
+        {
+          $group: {
+            _id: '$result.countryCode',
+            title: { $first: '$title' },
+            description: { $first: '$description' },
+            updatedAt: { $first: '$updatedAt' },
+            result: {
+              $first: {
+                discountStatus: '$result.discountStatus',
+                startedAt: '$result.startedAt',
+                endedAt: '$result.endedAt',
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            title: 1,
+            description: 1,
+            updatedAt: 1,
+            result: {
+              countryCode: '$_id',
+              discountStatus: 1,
+              startedAt: 1,
+              endedAt: 1,
+            },
+          },
+        },
+      ]);
+
+      if (!tasks) {
+        throw new NotFoundException(`Not found, Discount Status`);
+      }
+
+      return tasks;
     } catch (error) {
       this.logger.error(error, this.constructor.name);
       throw new NotFoundException(`Not found, Discount Status`);

@@ -6,6 +6,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
+import { ECountryCode } from '#/http/dto/udemy.dto';
+
 import { UdemyHttpService } from '#http/udemy.service';
 import { CreateTaskDto } from '#tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '#tasks/dto/update-task.dto';
@@ -68,10 +70,7 @@ export class TasksService {
     return await this.taskModel.findByIdAndDelete(task_id).exec();
   }
 
-  // Schedule Job
-  @Cron(CronExpression.EVERY_HOUR)
-  async checkDiscountStatus(): Promise<boolean> {
-    const countryCode = 'US';
+  async checkDiscountStatusByCountry(countryCode: ECountryCode): Promise<boolean> {
     const nowDate = new Date();
     const task = await this.taskModel.create({
       title: `checkDiscountStatus-${countryCode}-${nowDate.getTime()}`,
@@ -85,23 +84,36 @@ export class TasksService {
 
       const courseIds = await this.udemyHttpService.getCourseIdsFromApi(countryCode);
       const discountStatus = await this.udemyHttpService.getDiscountStatusFromApi(countryCode, courseIds);
-      const discountPeriods = await this.udemyHttpService.checkDiscountStatusChange(discountStatus);
+      const discountPeriods = await this.udemyHttpService.checkDiscountStatusChange(countryCode, discountStatus);
 
-      task.result = { discountStatus, ...discountPeriods };
+      task.result = { discountStatus, countryCode, ...discountPeriods };
       task.status = ETaskStatus.DONE;
 
-      this.logger.debug(`discountStatus: ${discountStatus}`, this.constructor.name);
+      this.logger.debug(`{ discountStatus: ${discountStatus}, countryCode: ${countryCode} } `, this.constructor.name);
       return discountStatus;
     } catch (error) {
       task.result = { message: error.message, stack: error.stack };
       task.status = ETaskStatus.FAILED;
 
       this.logger.error(`${inspect(error.stack)}`, this.constructor.name);
-      throw error.stack;
+      return false;
     } finally {
       task.updatedAt = new Date();
 
       await this.taskModel.updateOne({ _id: task._id }, task).exec();
+    }
+  }
+
+  // Schedule Job
+  @Cron(CronExpression.EVERY_HOUR, {
+    name: 'checkDiscountStatus',
+    disabled: false,
+  })
+  async checkDiscountStatus(): Promise<void> {
+    const countryCodes = Object.values(ECountryCode);
+
+    for (const countryCode of countryCodes) {
+      await this.checkDiscountStatusByCountry(countryCode);
     }
   }
 
