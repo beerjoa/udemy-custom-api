@@ -1,6 +1,16 @@
 import { ApiProperty, PickType, PartialType } from '@nestjs/swagger';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
-import { IsArray, IsNumber, IsObject, IsUrl, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsUrl,
+  ValidateNested,
+} from 'class-validator';
 
 import { IsCountryCode, IsCountryCodeOfUSRegion } from '#http/dto/validator';
 
@@ -12,6 +22,13 @@ enum EInternalClass {
   User = 'user',
   CourseReview = 'course_review',
   PricingResult = 'pricing_result',
+}
+
+export enum ECountryCode {
+  US = 'US',
+  CA = 'CA',
+  KR = 'KR',
+  IN = 'IN',
 }
 
 // https://www.udemy.com/developers/affiliate/models/course/
@@ -165,19 +182,49 @@ export class PricingResponseDto {
   bundle: any;
 }
 
-class TDiscountStatus {
+export class TDiscountStatus {
+  @ApiProperty({
+    type: Boolean,
+    description: 'Discount Status',
+    example: true,
+  })
+  @IsBoolean()
   discountStatus: boolean;
+
+  @ApiProperty({
+    enum: ECountryCode,
+    description: 'Country Code (Alpha-2)',
+    example: ECountryCode.US,
+  })
+  @IsEnum(ECountryCode)
+  @IsOptional()
+  countryCode: ECountryCode;
+
+  @ApiProperty({
+    type: Date,
+    description: 'Discount Started At',
+    example: new Date(),
+  })
+  @IsDate()
+  @IsOptional()
+  startedAt: Date;
+
+  @ApiProperty({
+    type: Date,
+    description: 'Discount Ended At',
+    example: new Date(),
+  })
+  @IsDate()
+  @IsOptional()
+  endedAt: Date;
 }
 
 class TaskDto extends PartialType(PickType(Task, ['title', 'description', 'updatedAt'] as const)) {}
 @Exclude()
 export class DiscountStatusResponseDto extends TaskDto {
   @ApiProperty({
-    type: Boolean,
+    type: TDiscountStatus,
     description: 'The result of discount status',
-    example: {
-      discountStatus: true,
-    },
   })
   @Expose()
   @IsObject()
@@ -186,12 +233,14 @@ export class DiscountStatusResponseDto extends TaskDto {
   result: TDiscountStatus;
 }
 
-export class DiscountStatusQueryDTO {
+export class DiscountStatusQueryDto {
   @ApiProperty({
-    type: String,
+    enum: ECountryCode,
     description: 'Country Code (Alpha-2)',
-    example: 'US',
+    example: ECountryCode.US,
+    required: false,
   })
+  @IsOptional()
   @Transform(({ value }) => value.toUpperCase())
   @IsCountryCode({ message: 'Invalid country code' })
   // We only handle discount status for the US region for now.
