@@ -38,7 +38,7 @@ export class UdemyHttpService {
     const headers = this.getCountryHeader(countryCode);
     const { data } = await firstValueFrom(
       this.httpService
-        .get<PricingResponseDto>('/pricing/', { params: { course_ids: courseIds.join(',') }, headers })
+        .get<PricingResponseDto>('/pricing', { params: { course_ids: courseIds.join(',') }, headers })
         .pipe(
           catchError((error: AxiosError) => {
             throw error;
@@ -61,7 +61,7 @@ export class UdemyHttpService {
     };
 
     const { data } = await firstValueFrom(
-      this.httpService.get<CourseResponseDto>('/courses/', { params, headers }).pipe(
+      this.httpService.get<CourseResponseDto>('/courses', { params, headers }).pipe(
         catchError((error: AxiosError) => {
           this.logger.error(error, this.constructor.name);
           throw error;
