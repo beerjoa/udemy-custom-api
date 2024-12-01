@@ -3,6 +3,8 @@ import { ApiBadRequestResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 
+import { MESSAGE } from '#/core/constants';
+
 import { DiscountStatusQueryDto, DiscountStatusResponseDto } from '#http/dto/udemy.dto';
 import { UdemyHttpService } from '#http/udemy.service';
 
@@ -40,7 +42,7 @@ export class UdemyController {
 
       return transformedResult;
     } catch (error) {
-      throw new NotFoundException('Not found, Discount Status');
+      throw new NotFoundException(MESSAGE.UDEMY.ERROR.NOT_FOUND_DISCOUNT_STATUS);
     }
   }
 }
