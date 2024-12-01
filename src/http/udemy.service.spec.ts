@@ -24,6 +24,7 @@ describe('UdemyHttpService', () => {
     page_size: expect.any(Number),
     page: expect.any(Number),
     price: expect.any(PickType(CourseQueryDto, ['price'])),
+    search: expect.any(String),
   };
   const courseResponse: CourseResponseDto = {
     count: expect.any(Number),
