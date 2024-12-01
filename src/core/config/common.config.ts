@@ -10,7 +10,8 @@ export const commonConfig = registerAs('common', () => ({
 export const httpConfig = registerAs('http', () => ({
   baseURL: process.env.API_URL,
   timeout: parseInt(process.env.API_TIMEOUT, 10) || 5000,
-  udemyApiKey: process.env.API_KEY || 'API_KEY',
+  udemyClientId: process.env.API_CLIENT_ID,
+  udemyClientSecret: process.env.API_CLIENT_SECRET,
 }));
 
 export const authConfig = registerAs('auth', () => ({

@@ -30,7 +30,7 @@ export const swaggerConfig = registerAs('swagger', () => ({
   
   ---
   `,
-  version: '0.3.0',
+  version: '0.3.131',
   contact: {
     name: 'Beerjoa',
     url: 'https://blog.beerjoa.dev/',

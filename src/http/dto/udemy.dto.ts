@@ -8,6 +8,7 @@ import {
   IsNumber,
   IsObject,
   IsOptional,
+  IsString,
   IsUrl,
   ValidateNested,
 } from 'class-validator';
@@ -24,6 +25,11 @@ enum EInternalClass {
   PricingResult = 'pricing_result',
 }
 
+/**
+ * @description The country code (Alpha-2) for Udemy API
+ * @enum {string}
+ * @readonly
+ */
 export enum ECountryCode {
   US = 'US',
   CA = 'CA',
@@ -31,7 +37,6 @@ export enum ECountryCode {
   IN = 'IN',
 }
 
-// https://www.udemy.com/developers/affiliate/models/course/
 type TCourseVisibleInstructors = {
   _class: EInternalClass.User;
   title: string;
@@ -88,24 +93,59 @@ type TAggregation = {
 export class CourseQueryDto {
   @ApiProperty({
     description: 'The page number of courses response',
+    type: Number,
+    required: false,
   })
   @IsNumber()
+  @IsOptional()
   page: number;
 
   @ApiProperty({
     description: 'The page size of courses response',
     type: Number,
+    required: false,
   })
   @IsNumber()
+  @IsOptional()
   page_size: number;
 
   @ApiProperty({
     description: 'The option about price',
     type: String,
+    required: false,
   })
+  @IsString()
+  @IsOptional()
   price: 'price-paid' | 'price-free';
+
+  @ApiProperty({
+    description: 'The search keyword',
+    type: String,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  search: string;
 }
 
+export class PricingQueryDto {
+  @ApiProperty({
+    description: 'The course ids of pricing response',
+    type: String,
+    required: true,
+  })
+  @IsString()
+  course_ids: string;
+
+  @ApiProperty({
+    description: 'The Fields of pricing response',
+    type: String,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  'fields[pricing_result]': string;
+}
 export class CourseResponseDto {
   @ApiProperty({
     description: 'The total number of courses',

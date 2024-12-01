@@ -1,11 +1,13 @@
 import { inspect } from 'util';
 
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
+import { MESSAGE } from '#/core/constants';
 import { ECountryCode } from '#/http/dto/udemy.dto';
 
 import { UdemyHttpService } from '#http/udemy.service';
@@ -20,6 +22,7 @@ export class TasksService {
     @InjectModel(Task.name) private taskModel: Model<Task>,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
     private readonly udemyHttpService: UdemyHttpService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
@@ -47,7 +50,7 @@ export class TasksService {
     const task = await this.taskModel.findById(task_id).exec();
 
     if (!task) {
-      throw new NotFoundException(`Not found, #${task_id} task`);
+      throw new NotFoundException(MESSAGE.TASK.ERROR.NOT_FOUND_TASK.replace('#${task_id}', task_id));
     }
 
     return task;
@@ -110,6 +113,20 @@ export class TasksService {
     disabled: false,
   })
   async checkDiscountStatus(): Promise<void> {
+    const countryCodes = [Object.values(ECountryCode)[1]];
+
+    for (const countryCode of countryCodes) {
+      await this.checkDiscountStatusByCountry(countryCode);
+    }
+  }
+
+  async checkDiscountStatusWhenRestarted(): Promise<void> {
+    const nodeEnv = this.configService.get<string>('common.nodeEnv');
+    if (nodeEnv !== 'production') {
+      this.logger.debug(`in development mode`, this.constructor.name);
+      return;
+    }
+
     const countryCodes = Object.values(ECountryCode);
 
     for (const countryCode of countryCodes) {
