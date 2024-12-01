@@ -1,7 +1,8 @@
 # Backend Dockerfile
 FROM node:18.17.1-slim as base
 LABEL maintainer="hello@beerjoa.dev"
-LABEL build_date="2023-10-26"
+LABEL build_date="2024-09-09"
+LABEL version="0.3.131"
 
 RUN apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -q -y \
