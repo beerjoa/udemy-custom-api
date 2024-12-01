@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 
 import { UsersService } from '#auth/users.service';
+import { MESSAGE } from '#core/constants';
 
 import { User } from '#schemas';
 
@@ -22,7 +23,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     const tidValid = true;
 
     if (!tidValid) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(MESSAGE.AUTH.ERROR.INVALID_CREDENTIALS);
     }
 
     return user;

@@ -6,6 +6,8 @@ import { Model } from 'mongoose';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { catchError, firstValueFrom } from 'rxjs';
 
+import { MESSAGE } from '#/core/constants';
+
 import {
   ECountryCode,
   CourseQueryDto,
@@ -13,6 +15,7 @@ import {
   PricingResponseDto,
   DiscountStatusResponseDto,
   TDiscountStatus,
+  PricingQueryDto,
 } from '#http/dto/udemy.dto';
 
 import { ETaskType, Task } from '#schemas';
@@ -36,18 +39,35 @@ export class UdemyHttpService {
 
   async getDiscountStatusFromApi(countryCode: ECountryCode, courseIds: number[]): Promise<boolean> {
     const headers = this.getCountryHeader(countryCode);
+    const params: PricingQueryDto = {
+      course_ids: courseIds.join(','),
+      'fields[pricing_result]': [
+        'price',
+        'discount_price',
+        'list_price',
+        'price_detail',
+        'price_serve_tracking_id',
+      ].join(','),
+    };
+
     const { data } = await firstValueFrom(
       this.httpService
-        .get<PricingResponseDto>('/pricing', { params: { course_ids: courseIds.join(',') }, headers })
+        .get<PricingResponseDto>('/pricing', {
+          params,
+          headers,
+        })
         .pipe(
           catchError((error: AxiosError) => {
+            error.request && this.logger.error(error.request, this.constructor.name);
             throw error;
           }),
         ),
     );
 
     const courses = Object.values(data.courses);
-    this.logger.debug(`courses: ${courses.map((course) => course.has_discount_saving)}`, this.constructor.name);
+    // this.logger.debug(`courses: ${courses.map((course) => course.has_discount_saving)}`, this.constructor.name);
+    this.logger.debug(`course[0]: ${JSON.stringify(courses[0])}`, this.constructor.name);
+    this.logger.debug(`header: ${JSON.stringify(headers)}`, this.constructor.name);
 
     const discountCoursesCount = courses.filter((course) => course.has_discount_saving).length;
     return discountCoursesCount >= Math.floor(courses.length / 2);
@@ -56,20 +76,28 @@ export class UdemyHttpService {
     const headers = this.getCountryHeader(countryCode);
     const params: CourseQueryDto = {
       page_size: 10,
-      page: 1,
+      page: 2,
       price: 'price-paid',
+      search: 'development',
     };
 
     const { data } = await firstValueFrom(
-      this.httpService.get<CourseResponseDto>('/courses', { params, headers }).pipe(
-        catchError((error: AxiosError) => {
-          this.logger.error(error, this.constructor.name);
-          throw error;
-        }),
-      ),
+      this.httpService
+        .get<CourseResponseDto>('/courses/', {
+          params,
+          headers,
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            error.request && this.logger.error(error.request, this.constructor.name);
+            throw error;
+          }),
+        ),
     );
 
-    if (Array.isArray(data.results) && data.results.length === 0) throw new NotFoundException('No courses found');
+    if (Array.isArray(data.results) && data.results.length === 0)
+      throw new NotFoundException(MESSAGE.UDEMY.ERROR.NOT_FOUND_COURSE);
+    this.logger.debug(`courseIds: ${data.results.map((course) => course.id)}`, this.constructor.name);
 
     return data.results.map((course) => course.id);
   }
@@ -127,13 +155,13 @@ export class UdemyHttpService {
         .exec();
 
       if (!task) {
-        throw new NotFoundException(`Not found, Discount Status`);
+        throw new NotFoundException(MESSAGE.UDEMY.ERROR.NOT_FOUND_DISCOUNT_STATUS);
       }
 
       return task;
     } catch (error) {
       this.logger.error(error, this.constructor.name);
-      throw new NotFoundException(`Not found, Discount Status`);
+      throw new NotFoundException(MESSAGE.UDEMY.ERROR.NOT_FOUND_DISCOUNT_STATUS);
     }
   }
   async getDiscountStatusOfEveryCountryFromMongo(): Promise<Task[]> {
@@ -180,13 +208,13 @@ export class UdemyHttpService {
       ]);
 
       if (!tasks) {
-        throw new NotFoundException(`Not found, Discount Status`);
+        throw new NotFoundException(MESSAGE.UDEMY.ERROR.NOT_FOUND_DISCOUNT_STATUS);
       }
 
       return tasks;
     } catch (error) {
       this.logger.error(error, this.constructor.name);
-      throw new NotFoundException(`Not found, Discount Status`);
+      throw new NotFoundException(MESSAGE.UDEMY.ERROR.NOT_FOUND_DISCOUNT_STATUS);
     }
   }
 }
